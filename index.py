@@ -23,13 +23,13 @@ for page in range(1, 3):
     # selector here
     
     name = soup.select('#stores-list-div .stores-name')  # select all
-    post_title = soup.select('.product-item-link')
+    post_title = soup.select('.product-item-link[title]')
     #regular_price = soup.select('.price')
     regular_price = soup.select('.old_prices .old-price span:nth-of-type(2)')
     sale_price = soup.select('[data-price-amount] .price')
     product_images = soup.select('.product-image-wrapper img.product-image-photo')
     product_cat = soup.select('.category-description h3')
-
+    print(post_title)
     for post_title_v, regular_price_v, sale_price_v, product_images_v, product_cat_v in zip_longest(
         post_title, 
         regular_price,
@@ -40,8 +40,9 @@ for page in range(1, 3):
         counter += 1
         
         # single hyperlink open action
-        post_list = '' if post_title_v == None else post_title_v.get('href'),
-        post_content = '',
+        post_list = '' if post_title_v.get('href') == None else post_title_v.get('href')
+        print(post_list)
+        post_content = ''
         post_content_value = ''
         
         #sku
@@ -66,7 +67,7 @@ for page in range(1, 3):
         for post in post_list:
             # condition if not None
             if post != None:
-                post_url = post
+                post_url = post_list
                 post_page = urlopen(post_url)
                 post_soup = BeautifulSoup(post_page, 'html.parser')
                 post_content = post_soup.select('.product-info-main .product.overview .value')
@@ -87,21 +88,18 @@ for page in range(1, 3):
             for post_content_v, sku_content_v, stock_content_v, meta_desc_content_v, manufacture_content_v in zip_longest(
                 post_content, sku_content, stock_content, meta_desc_content, manufacture_content):
                 
-                post_content_value = post_content_v.text
-                sku_value = sku_content_v.text
-                stock_value = stock_content_v.text
-                meta_desc_value = meta_desc_content_v.get('content')
-                manufacture_value = manufacture_content_v.text
+                post_content_value = post_content_v
                 
         
             
+       
         
         
         #print(post_content)
         # #condition
         # print(bool(call_for_price_v))
         #print(post_title_v)
-        
+        #print(post_content_value)
         result.append({
             "id": counter,
             "post_title": '' if post_title_v == None else post_title_v.get('title'),
@@ -178,7 +176,7 @@ for page in range(1, 3):
         #     "attribute_default:pa_manufacture": ""
         # })
 
-print(json.dumps(result))
+#print(json.dumps(result))
 file = open('result.json', 'w')
 file.write(json.dumps(result))
 file.close()
